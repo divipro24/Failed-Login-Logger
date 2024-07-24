@@ -25,4 +25,4 @@ Here is a short description of the plugin.  This should be no more than 150 char
 
 == Changelog ==
 
-= 1.0 =
+= 1.0.0 =
