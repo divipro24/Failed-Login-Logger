@@ -11,6 +11,7 @@ License: GPLv2
 */
 
 register_activation_hook(__FILE__, 'fll_create_table');
+register_uninstall_hook(__FILE__, 'fll_uninstall');
 
 function fll_create_table() {
     global $wpdb;
@@ -28,6 +29,14 @@ function fll_create_table() {
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
+}
+
+function fll_uninstall() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'failed_logins';
+
+    $sql = "DROP TABLE IF EXISTS $table_name;";
+    $wpdb->query($sql);
 }
 
 add_action('wp_login_failed', 'fll_log_failed_login');
