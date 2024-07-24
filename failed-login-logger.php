@@ -85,26 +85,67 @@ function fll_display_failed_logins() {
         echo '<div class="updated"><p>Record deleted.</p></div>';
     }
 
-    $results = $wpdb->get_results("SELECT * FROM $table_name");
+    // Handle clear all request
+    if (isset($_POST['clear_all'])) {
+        $wpdb->query("DELETE FROM $table_name");
+        echo '<div class="updated"><p>All records cleared.</p></div>';
+    }
+
+    // Pagination
+    $items_per_page = 50;
+    $page = isset($_GET['paged']) ? intval($_GET['paged']) : 1;
+    $offset = ($page - 1) * $items_per_page;
+
+    $total_items = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
+    $total_pages = ceil($total_items / $items_per_page);
+
+    $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_name LIMIT %d OFFSET %d", $items_per_page, $offset));
 
     echo '<div class="wrap">';
     echo '<h1>Failed Login Attempts</h1>';
+
+    // Clear all button
+    echo '<form method="post">';
+    echo '<input type="hidden" name="clear_all" value="true">';
+    echo '<input type="submit" class="button button-primary" value="Clear All">';
+    echo '</form>';
+
     echo '<table class="wp-list-table widefat fixed striped">';
     echo '<thead><tr><th>Time</th><th>Username</th><th>Password</th><th>IP Address</th><th>Actions</th></tr></thead>';
     echo '<tbody>';
 
-    foreach ($results as $row) {
-        echo '<tr>';
-        echo '<td>' . esc_html($row->time) . '</td>';
-        echo '<td>' . esc_html($row->username) . '</td>';
-        echo '<td>' . esc_html($row->password) . '</td>';
-        echo '<td>' . esc_html($row->ip_address) . '</td>';
-        echo '<td><a href="' . admin_url('admin.php?page=failed-logins&delete_id=' . $row->id) . '">Delete</a></td>';
-        echo '</tr>';
+    if ($results) {
+        foreach ($results as $row) {
+            echo '<tr>';
+            echo '<td>' . esc_html($row->time) . '</td>';
+            echo '<td>' . esc_html($row->username) . '</td>';
+            echo '<td>' . esc_html($row->password) . '</td>';
+            echo '<td>' . esc_html($row->ip_address) . '</td>';
+            echo '<td><a href="' . admin_url('admin.php?page=failed-logins&delete_id=' . $row->id) . '">Delete</a></td>';
+            echo '</tr>';
+        }
+    } else {
+        echo '<tr><td colspan="5">No records found.</td></tr>';
     }
 
     echo '</tbody>';
     echo '</table>';
+
+    // Pagination links
+    if ($total_pages > 1) {
+        echo '<div class="tablenav"><div class="tablenav-pages">';
+        $pagination_args = array(
+            'base' => add_query_arg('paged', '%#%'),
+            'format' => '',
+            'prev_text' => __('&laquo;'),
+            'next_text' => __('&raquo;'),
+            'total' => $total_pages,
+            'current' => $page
+        );
+        echo paginate_links($pagination_args);
+        echo '</div></div>';
+    }
+
     echo '</div>';
 }
 
