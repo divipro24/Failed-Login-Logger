@@ -18,6 +18,8 @@ Here is a short description of the plugin.  This should be no more than 150 char
 * Username
 * Password
 * IP Address
+* Вывод по 50 записей на страницу
+* Можно удалить все логи 1 кнопкой
 * Плагин НЕ записывает удачные попытки входа.
 
 
