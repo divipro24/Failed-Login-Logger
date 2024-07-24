@@ -2,7 +2,8 @@
 /*
 Plugin Name: Failed Login Logger
 Description: Logs failed login attempts and displays them in the admin panel.
-Author URI: https://divipro24.com/
+Author URI: https://divipro24.com
+Plugin URI: https://divipro24.com
 Version: 1.0.0
 Author: Dmitri Andrejev
 Github URI: https://github.com/divipro24/failed-login-logger
